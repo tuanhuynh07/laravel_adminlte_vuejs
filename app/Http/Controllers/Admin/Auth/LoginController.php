@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers\Admin\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
@@ -51,10 +52,11 @@ class LoginController extends Controller
             'password' => 'required',
         ]);
 
-        if(auth()->attempt(array('email' => $inputVal['email'], 'password' => $inputVal['password']))){
-            if (auth()->user()->is_admin == 1) {
+        if(Auth::guard('admin')->attempt(array('email' => $inputVal['email'], 'password' => $inputVal['password']))){
+            if (\auth('admin')->user()->is_admin == 1) {
                 return redirect()->route('admin.route');
             }else{
+                \auth('admin')->logout();
                 return redirect()->route('home');
             }
         }else{
